@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.stripe.android.ApiResultCallback
 import com.stripe.android.PaymentConfiguration
-import com.stripe.android.SourceCallback
 import com.stripe.android.Stripe
 import com.stripe.android.model.*
 import com.stripe.android.view.CardMultilineWidget
@@ -29,8 +28,8 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.activity_stripe, container)
     }
@@ -46,6 +45,9 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
             getToken()
         }
 
+        view.findViewById<View>(R.id.buttonCancel)?.setOnClickListener {
+            dismiss()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +61,7 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
 
     private fun getToken() {
         val mCardInputWidget =
-            view?.findViewById<View>(R.id.card_input_widget) as CardMultilineWidget
+                view?.findViewById<View>(R.id.card_input_widget) as CardMultilineWidget
 
         if (mCardInputWidget.validateAllFields()) {
 
@@ -71,43 +73,40 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
                 val publishableKey = arguments?.getString("publishableKey", null) ?: ""
                 PaymentConfiguration.init(publishableKey)
 
-                val paymentMethodParamsCard = card.toPaymentMethodParamsCard()
-                val paymentMethodCreateParams = PaymentMethodCreateParams.create(
-                    paymentMethodParamsCard,
-                    PaymentMethod.BillingDetails.Builder().build()
-                )
-
                 val stripe = Stripe(activity!!, PaymentConfiguration.getInstance().publishableKey)
 
-                stripe.createPaymentMethod(
-                    paymentMethodCreateParams,
-                    object : ApiResultCallback<PaymentMethod> {
-                        override fun onSuccess(result: PaymentMethod) {
-                            view?.findViewById<View>(R.id.progress)?.visibility = View.GONE
-                            view?.findViewById<View>(R.id.buttonSave)?.visibility = View.GONE
+                print(publishableKey)
+                print(card)
 
-                            if (result.id != null) {
-                                tokenListener?.invoke(result.id!!)
-                                dismiss()
+                stripe.createToken(
+                        card,
+                        object : ApiResultCallback<Token> {
+                            override fun onSuccess(token: Token) {
+                                view?.findViewById<View>(R.id.progress)?.visibility = View.GONE
+                                view?.findViewById<View>(R.id.buttonSave)?.visibility = View.GONE
+
+                                if (token.id != null) {
+                                    tokenListener?.invoke(token.id!!)
+                                    dismiss()
+                                }
                             }
-                        }
 
-                        override fun onError(error: Exception) {
-                            view?.findViewById<View>(R.id.progress)?.visibility = View.GONE
-                            view?.findViewById<View>(R.id.buttonSave)?.visibility = View.VISIBLE
-                            view?.let {
-                                Snackbar.make(it, error.localizedMessage, Snackbar.LENGTH_LONG)
-                                    .show()
+                            override fun onError(error: Exception) {
+                                view?.findViewById<View>(R.id.progress)?.visibility = View.GONE
+                                view?.findViewById<View>(R.id.buttonSave)?.visibility = View.VISIBLE
+                                view?.let {
+                                    Snackbar.make(it, error.localizedMessage, Snackbar.LENGTH_LONG)
+                                            .show()
+                                }
                             }
-                        }
 
-                    })
+                        })
 
             }
         } else {
             view?.let {
                 Snackbar.make(it, "The card info you entered is not correct", Snackbar.LENGTH_LONG)
-                    .show()
+                        .show()
             }
         }
 

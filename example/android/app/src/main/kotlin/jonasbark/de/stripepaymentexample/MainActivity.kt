@@ -9,6 +9,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 //        GeneratedPluginRegistrant.registerWith(this)
 
-        StripeDialog.newInstance("Timmey", "pk_test_key").show(supportFragmentManager, "")
+        StripeDialog.newInstance("Timmey", "pk_test_ZjlJkoiT7OYNdQstW8Sm5HK00090HGGjoF").show(supportFragmentManager, "")
     }
 }

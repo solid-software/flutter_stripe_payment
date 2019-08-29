@@ -18,6 +18,7 @@
   }
   else if ([@"setPublishableKey" isEqualToString:call.method]) {
       [[STPPaymentConfiguration sharedConfiguration] setPublishableKey:call.arguments];
+      result(nil);
   }
   else {
       result(FlutterMethodNotImplemented);
@@ -41,10 +42,8 @@
     [addCardViewController dismissViewControllerAnimated:true completion:nil];
 }
 
-- (void)addCardViewController:(STPAddSourceViewController *)addCardViewController
-              didCreatePaymentMethod:(nonnull STPPaymentMethod *)paymentMethod
-                   completion:(nonnull STPErrorBlock)completion {
-    flutterResult(paymentMethod.stripeId);
+- (void)addCardViewControllerDidCreateToken:(STPAddSourceViewController *)addCardViewController didCreateToken:(STPToken *)token completion:(STPErrorBlock)completion {
+    flutterResult(token.stripeID);
     
     [addCardViewController dismissViewControllerAnimated:true completion:nil];
 }

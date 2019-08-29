@@ -36,17 +36,19 @@
     STPPaymentCardTextField* paymentCell = [((UITableView*)self.view.subviews.firstObject) cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]].subviews.firstObject.subviews.firstObject;
     
     STPAPIClient *apiClient = [[STPAPIClient alloc] initWithConfiguration:[STPPaymentConfiguration sharedConfiguration]];
-
-    STPPaymentMethodCardParams *cardParams = paymentCell.cardParams;
-    STPPaymentMethodParams *paymentMethodParams = [STPPaymentMethodParams paramsWithCard:cardParams billingDetails:nil metadata:nil];
-
+    
+    STPCardParams *cardParams = [STPCardParams new];
+    cardParams.number = paymentCell.cardNumber;
+    cardParams.expMonth = paymentCell.expirationMonth;
+    cardParams.expYear = paymentCell.expirationYear;
+    cardParams.cvc = paymentCell.cvc;
+    
     if (cardParams) {
-        [apiClient createPaymentMethodWithParams:paymentMethodParams completion:^(STPPaymentMethod * _Nullable paymentMethod, NSError * _Nullable error) {
+        [apiClient createTokenWithCard:cardParams completion:^(STPToken * _Nullable token, NSError * _Nullable error) {
             if (error) {
                 [self performSelector:@selector(handleError:) withObject:error afterDelay:0];
-            }
-            else {
-                [self.srcDelegate addCardViewController:self didCreatePaymentMethod:paymentMethod completion:^(NSError * _Nullable error) {
+            } else {
+                [self.srcDelegate addCardViewControllerDidCreateToken:self didCreateToken:token completion:^(NSError * _Nullable error) {
                 }];
             }
         }];

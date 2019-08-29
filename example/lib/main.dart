@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 
 void main() {
@@ -14,9 +13,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   initState() {
+    print('init state');
     super.initState();
-
-    StripeSource.setPublishableKey("pk_test");
   }
 
   @override
@@ -29,11 +27,11 @@ class _MyAppState extends State<MyApp> {
         body: new Center(
           child: RaisedButton(
             child: Text("Add Card"),
-            onPressed: () {
+            onPressed: () async {
+              await StripeSource.setPublishableKey(
+                  "pk_test_ZjlJkoiT7OYNdQstW8Sm5HK00090HGGjoF");
               print("Ready: ${StripeSource.ready}");
-              StripeSource.addSource().then((String token) {
-                _addSource(token);
-              });
+              StripeSource.addSource().then(_addSource);
             },
           ),
         ),
