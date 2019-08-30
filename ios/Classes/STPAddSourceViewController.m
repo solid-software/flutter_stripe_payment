@@ -42,6 +42,7 @@
     cardParams.expMonth = paymentCell.expirationMonth;
     cardParams.expYear = paymentCell.expirationYear;
     cardParams.cvc = paymentCell.cvc;
+    cardParams.currency = @"aud";
     
     if (cardParams) {
         [apiClient createTokenWithCard:cardParams completion:^(STPToken * _Nullable token, NSError * _Nullable error) {

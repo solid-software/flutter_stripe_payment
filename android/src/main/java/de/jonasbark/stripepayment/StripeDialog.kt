@@ -75,11 +75,10 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
 
                 val stripe = Stripe(activity!!, PaymentConfiguration.getInstance().publishableKey)
 
-                print(publishableKey)
-                print(card)
+                val _card = card.toBuilder().currency("aud").build()
 
                 stripe.createToken(
-                        card,
+                        _card,
                         object : ApiResultCallback<Token> {
                             override fun onSuccess(token: Token) {
                                 view?.findViewById<View>(R.id.progress)?.visibility = View.GONE
