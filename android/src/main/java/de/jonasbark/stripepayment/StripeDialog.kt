@@ -75,7 +75,7 @@ class StripeDialog : androidx.fragment.app.DialogFragment() {
 
                 val stripe = Stripe(activity!!, PaymentConfiguration.getInstance().publishableKey)
 
-                val _card = card.toBuilder().currency("aud").build()
+                val _card = card.toBuilder().currency("usd").build()
 
                 stripe.createToken(
                         _card,
